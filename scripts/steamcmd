@@ -1,0 +1,33 @@
+#!/bin/sh
+
+STEAMDIR="/var/lib/steamcmd"
+
+if [ ! -d "${STEAMDIR}" ]; then
+    mdkir -p ${STEAMDIR}
+fi
+
+VERSION="v1"
+# ensure compatibility with bootc
+if [ ! -e "${STEAMDIR}/.${VERSION}" ]; then
+
+    echo "Installing version: ${VERSION}"
+    STEAMPKG=""
+    if [ ! -e "/opt/steamcmd/steamcmd.tar.gz" ]; then
+        STEAMPKG=/opt/steamcmd/steamcmd.tar.gz
+    else
+        curl -fsSL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" \
+            -o /tmp/steamcmd.tar.gz
+        STEAMPKG=/tmp/steamcmd.tar.gz
+    fi
+
+    #   check if /opt/steamcmd/...tar.gz exists
+    tar zxvf ${STEAMPKG} -C ${STEAMDIR} \
+    && chmod +x ${STEAMDIR}/steamcmd.sh ${STEAMDIR}/linux32/steamcmd
+
+    # bootc version marker file
+    touch ${STEAMDIR}/.${VERSION}
+
+fi
+
+cd ${STEAMDIR}
+./steamcmd.sh
